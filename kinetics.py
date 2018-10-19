@@ -4,7 +4,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-h = 1e-4
+h = 1e-6
 
 
 def readFile(file):
