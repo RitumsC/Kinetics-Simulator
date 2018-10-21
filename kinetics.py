@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import time
+from functools import reduce
 
 h = 10e-7
 
@@ -17,8 +18,8 @@ class Rxn:
         self.reag = reag
         self.prod = prod
 
-    def isReag(self, rg):
-        return rg in self.reag
+    def nReag(self, rg):
+        return self.reag.count(rg)
 
     def nProd(self, rg):
         return self.prod.count(rg)
@@ -62,8 +63,9 @@ def reactions(Reags, Rxns):
     for r in Reags:
         reactions[r] = []
         for rxn in Rxns:
-            if rxn.isReag(r):
-                reactions[r].append((-rxn.rate, rxn.reag))
+            a = rxn.nReag(r)
+            if a:
+                reactions[r].append((-a*rxn.rate, rxn.reag))
             a = rxn.nProd(r)
             if a:
                 reactions[r].append((a*rxn.rate, rxn.reag))
@@ -71,14 +73,12 @@ def reactions(Reags, Rxns):
 
 
 def next_euler(Reags, reactions):  # will be called steps times
-    """
-    """
     for diff in reactions:
         delta = 0
         for i in reactions[diff]:
             rate, reags = i
-            reags = np.array([Reags[i] for i in reags])
-            delta = delta + rate*np.prod(reags)
+            reags = [Reags[i] for i in reags]
+            delta = delta + rate*reduce(lambda x, y: x*y, reags)
         Reags[diff] = Reags[diff] + h*delta
     return Reags
 
@@ -89,32 +89,35 @@ def next_rk4(Reags, reactions):  # will be called steps times
         j = 0
         for i in reactions[diff]:
             rate, reags = i
-            reags = np.array([Reags[i] for i in reags])
-            j = j + rate*np.prod(reags)
+            reags = [Reags[i] for i in reags]
+            j = j + rate*reduce(lambda x, y: x*y, reags)
         a[diff] = j
     for diff in reactions:
         j = 0
         for i in reactions[diff]:
             rate, reags = i
-            reags = np.array([Reags[i] + 0.5*h*a[i] for i in reags])
-            j = j + rate*np.prod(reags)
+            reags = [Reags[i] + 0.5*h*a[i] for i in reags]
+            j = j + rate*reduce(lambda x, y: x*y, reags)
         b[diff] = j
     for diff in reactions:
         j = 0
         for i in reactions[diff]:
             rate, reags = i
-            reags = np.array([Reags[i] + 0.5*h*b[i] for i in reags])
-            j = j + rate*np.prod(reags)
+            reags = [Reags[i] + 0.5*h*b[i] for i in reags]
+            j = j + rate*reduce(lambda x, y: x*y, reags)
         c[diff] = j
     for diff in reactions:
         j = 0
         for i in reactions[diff]:
             rate, reags = i
-            reags = np.array([Reags[i] + h*c[i] for i in reags])
-            j = j + rate*np.prod(reags)
+            reags = [Reags[i] + h*c[i] for i in reags]
+            j = j + rate*reduce(lambda x, y: x*y, reags)
 #            if j < 1: print(j)
         Reags[diff] = Reags[diff] + h*(a[diff]+2*b[diff]+2*c[diff]+j)/6
-
+    
+    if Reags["A"] > 1:
+        print("I be there")
+    
     return Reags
 
 
@@ -152,6 +155,7 @@ def run(Reags, Rxns, steps, plot=True):
     for r in points:
         ret[i % 3] = r[-1]
         i = i + 1
+    plt.savefig('oregonator.png')
     plt.show()
     return ret
 
