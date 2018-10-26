@@ -1,12 +1,12 @@
 """
 Script to generate input files at different urea concentrations
 
+requires premade directory ./protein_input/
 """
 import math
 
-
 c_urea = []
-for i in range(20):
+for i in range(21):
     c_urea.append(8/20*i)
 
 for i in c_urea:
