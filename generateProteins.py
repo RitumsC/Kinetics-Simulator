@@ -8,7 +8,7 @@ import kinetics as kin
 import matplotlib.pyplot as plt
 
 # changing default constants
-h = 1e-6
+kin.h = 1e-6
 
 
 t1 = time.time()
@@ -20,7 +20,7 @@ plot2 = []
 for file in os.listdir("./protein_input/"):
     rgs = kin.readFile("./protein_input/"+file)[0]
 
-# for each file calculates equilibrium conenctrations given constants
+# for each file calculates equilibrium concs given constants
 for file in os.listdir("./protein_input/"):
     urea.append(float(file.split('.txt')[0][7:]))
 
@@ -28,7 +28,7 @@ for file in os.listdir("./protein_input/"):
     reacts, rlist = kin.reactions(rgs, Rxns)
     maxCh = 1
     points = dict(rgs)
-    while maxCh > 1e-8:
+    while maxCh > 1e-9:
         i = 0
         kin.next_euler(rgs, reacts, rlist)
         if not i % 1000:
