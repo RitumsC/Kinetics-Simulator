@@ -7,7 +7,9 @@ import os
 import kinetics as kin
 import matplotlib.pyplot as plt
 
+# changing default constants
 h = 1e-6
+
 
 t1 = time.time()
 
@@ -39,7 +41,7 @@ for file in os.listdir("./protein_input/"):
     plot2.append(pts)
     print(file.split('.txt')[0] + " done")
 
-
+# plots the results
 D = [pts[0] for pts in plot2]
 I = [pts[1] for pts in plot2]
 N = [pts[2] for pts in plot2]
@@ -56,4 +58,4 @@ plt.savefig("prot.png")
 plt.show()
 
 t2 = time.time()
-print(t2 - t1)
+print("Time taken for calculations: ", t2-t1, " seconds")
